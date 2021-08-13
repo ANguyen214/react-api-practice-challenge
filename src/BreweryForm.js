@@ -1,37 +1,29 @@
 import React, {useState, useEffect} from "react";
 
-function BreweryForm() {
-    const [breweryList, setBreweryList] = useState(null);
+function BreweryForm({breweryList, handleBreweryList }) {
     const [state, setState] = useState("");
 
-    useEffect(() => {
-        setBreweryList([]);
-        const abortController = new AbortController();
+    const handleChange = (event) => {
+        event.preventDefault();
+        setState(event.target.value);
+    }
 
+    const handleSubmit = (event) => {
+        event.preventDefault();
         async function loadBreweries() {
             try {
                 const response = await fetch(
-                    `https://www.openbrewerydb.org/breweries?by_state=${breweryList.state}`,
-                    {signal: abortController.signal}
+                    `https://api.openbrewerydb.org/breweries?by_state=${state}`
                 );
-                setBreweryList(response);
-                console.log(breweryList);
+                const data = await response.json();
+                handleBreweryList(data);
             } catch (error) {
                 console.log(error);
             }
         }
         loadBreweries();
-        return () => abortController.abort();
-    },[state])
+    }
 
-    const handleChange = (event) => {
-        event.preventDefault();
-        setState(event.target.value)
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        
-    }
     if(breweryList)
     {
         return (
